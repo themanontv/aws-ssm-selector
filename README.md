@@ -6,6 +6,8 @@ This could easily be adapted to be used elsewhere such as linux or in WSL with s
 
 If you don't want to use AWS-Vault then you can easily use AWS CLI on it's own you just need to change the CLI Commands in the script.
 
+![aws-ssh running in Mac OS](demo.png)
+
 # Requirements
 To connect to instances they will need to have the SSM agent installed and you will need to have the AWS SSM client installed
 on your machine, this can be found [here](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
