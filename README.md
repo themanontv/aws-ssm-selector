@@ -6,6 +6,9 @@ This could easily be adapted to be used elsewhere such as linux or in WSL with s
 
 If you don't want to use AWS-Vault then you can easily use AWS CLI on it's own you just need to change the CLI Commands in the script.
 
+On running the script you will be asked to select the profile you want to login with but you can bypass this by setting the `AWS_PROFILE` environment variable
+I do this by using the AWS plugin for Oh my zsh and this can let you set the profile using the `asp` command.
+
 ![aws-ssh running in Mac OS](demo.png)
 
 # Requirements
