@@ -91,7 +91,7 @@ if profile in scary_environments:
 		if click.confirm(profile + ' looks scary, do you want to continue?', default=False, abort=True):
 			highlight = "bg_red"
 	except click.exceptions.Abort:
-		print('I get it, man 😭')
+		print('I understand. 😭')
 		exit()
 else:
 	highlight = "bg_green"
