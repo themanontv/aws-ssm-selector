@@ -166,4 +166,4 @@ except TypeError:
 id = match.group(1)
 
 # Launch the connection
-os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
+subprocess.run(["aws-vault", "exec", profile, "--", "aws", "ssm", "start-session", "--target", id], check=True)
