@@ -57,7 +57,7 @@ def preview(selection):
                 return '\n'.join(preview)
 
 # Set this variable to get your user directory, currently set to work with MacOS
-user = "Put your user path here"
+user = "Put your user name here"
 file_path = '/Users/' + user + '/.aws/config'
 
 # Try to fetch a profile from the environment
@@ -116,17 +116,8 @@ if profile in scary_environments:
 else:
     highlight = "bg_green"
 
-# Check the programs for paths and set safe envs
-aws_vault = shutil.which("aws-vault") or "aws-vault"
-aws = shutil.which("aws") or "aws"
-
-safe_env = os.environ.copy()
-safe_env["PATH"] = "/usr/bin:/bin:/usr/local/bin:/opt/homebrew/bin"
-safe_env.setdefault("HOME", os.path.expanduser("~"))
-safe_env.setdefault("TERM", os.environ.get("TERM", "xterm-256color"))
-
 # Execute the describe instances command
-result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True, env=safe_env)
+result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True)
 
 # Parse the JSON
 try:
@@ -175,10 +166,4 @@ except TypeError:
     sys.exit()
 id = match.group(1)
 
-try:
-    # Launch the connection
-    subprocess.run(["aws-vault", "exec", profile, "--", "aws", "ssm", "start-session", "--target", id], check=True, env=safe_env)
-except KeyboardInterrupt:
-    # user pressed Ctrl-C — exit gracefully
-    print("Ok, Bye. ")
-    sys.exit(0)
+os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
