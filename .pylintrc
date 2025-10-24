@@ -1,0 +1,4 @@
+[FORMAT]
+max-line-length=240
+[MESSAGES CONTROL]
+disable = redefined-outer-name, invalid-name, redefined-builtin, inconsistent-return-statements, bare-except
