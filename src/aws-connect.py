@@ -22,6 +22,25 @@ import subprocess
 import click
 from simple_term_menu import TerminalMenu
 
+def is_executable(file_path):
+    """
+    is_executable(file_path)
+    Return True if file_path names an executable found by the system (via PATH lookup), otherwise False.
+    Parameters
+    file_path (str): Command name or path to check.
+    Returns
+    bool: True when shutil.which(file_path) locates a file and os.access(..., os.X_OK) is true; otherwise False.
+    """
+
+    executable_path = shutil.which(file_path)
+    
+    # Check if the executable path is not None and is executable
+    if executable_path and os.access(executable_path, os.X_OK):
+        return True
+    else:
+        return False
+   
+
 def preview(selection):
     """
     Build and return a multi-line preview string for a selected instance entry.
@@ -71,7 +90,7 @@ profile_regex = re.compile(r'\[profile ([a-zA-Z0-9\-]+)\]')
 hidden_environments = ['']
 scary_environments = ['production']
 
-if not os_profile:
+if not os_profile and is_executable("aws"):
     # Reading from the ~/.aws/config file to get the profiles
     try:
         with open(file_path, encoding='utf-8') as file:
@@ -117,7 +136,10 @@ else:
     highlight = "bg_green"
 
 # Execute the describe instances command
-result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True)
+if is_executable("aws-vault"):
+        result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True)
+    else:
+        result = subprocess.run(['aws', 'ec2', 'describe-instances', '--profile', profile], stdout=subprocess.PIPE, check=True)
 
 # Parse the JSON
 try:
@@ -166,4 +188,8 @@ except TypeError:
     sys.exit()
 id = match.group(1)
 
-os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
+# Execute the describe instances command
+if is_executable("aws-vault"):
+        os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
+    else:
+        os.system('aws ssm start-session --target ' + id ' --profile ' + profile)
