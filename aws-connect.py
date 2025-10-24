@@ -13,11 +13,6 @@ Usage:
     Run the script and select a profile and instance from the interactive menus.
 """
 
-# Requirements:
-# simple_term_menu
-# click
-
-# Importing Libraries
 import os
 import sys
 import re
