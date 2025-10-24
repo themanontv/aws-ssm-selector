@@ -7,7 +7,7 @@ then open an SSM session to the selected instance.
 Requirements:
     * simple_term_menu
     * click
-    * aws-vault (for credential management)
+    * aws-vault (ish)
 
 Usage:
     Run the script and select a profile and instance from the interactive menus.
