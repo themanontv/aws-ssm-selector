@@ -57,7 +57,7 @@ def preview(selection):
                 return '\n'.join(preview)
 
 # Set this variable to get your user directory, currently set to work with MacOS
-user = "Put your user name here"
+user = "<user>"
 file_path = '/Users/' + user + '/.aws/config'
 
 # Try to fetch a profile from the environment
