@@ -1,7 +1,7 @@
 # AWS SSM Instance Selector
 A simple tool for selecting instances in AWS to connect to using SSM
 
-This tool is designed specifically to work in a bash like shell in Mac OS using [AWS Vault](https://github.com/99designs/aws-vault) as the main layer but you really don't *have* to use it, you'll just need to do some tweaking yourself.
+This tool is designed specifically to work in a bash like shell in Mac OS using [AWS Vault](https://github.com/99designs/aws-vault) as the main layer but you really don't *have* to use it as the script will default to AWS CLI only mode instead.
 This could easily be adapted to be used elsewhere such as linux or in WSL with some tweaking to the file path.
 
 If you don't want to use AWS-Vault then you can easily use AWS CLI on it's own you just need to change the CLI Commands in the script.
