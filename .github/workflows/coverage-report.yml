@@ -100,39 +100,39 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   python - <<PY
-                      import os, xml.etree.ElementTree as ET, requests
-                      from pathlib import Path
-                      token = os.environ['GITHUB_TOKEN']
-                      repo = os.environ['GITHUB_REPOSITORY']
-                      pr = os.environ['GITHUB_REF'].split('/')[-1]
-                      xml_path = Path('coverage.xml')
-                      if not xml_path.exists():
-                          print('No coverage.xml')
-                          raise SystemExit(0)
-                      tree = ET.parse(xml_path)
-                      root = tree.getroot()
-                      rows = []
-                      for pkg in root.findall('.//package'):
-                          for cls in pkg.findall('.//class'):
-                              filename = cls.get('filename', '')
-                              line_rate = cls.get('line-rate')
-                              pct = float(line_rate) * 100 if line_rate is not None else None
-                              rows.append((filename, pct))
-                      if not rows:
-                          line_rate = root.get('line-rate')
-                          pct = float(line_rate) * 100 if line_rate is not None else None
-                          rows = [('total', pct)]
-                      # Build markdown table (first 20 rows)
-                      md = []
-                      md.append('| File | Coverage |')
-                      md.append('|:---|---:|')
-                      for name, pct in sorted(rows, key=lambda x: (x[1] is None, -(x[1] or 0)))[:20]:
-                          pct_text = f"{pct:.1f}%" if pct is not None else 'N/A'
-                          md.append(f'| `{name}` | {pct_text} |')
-                      body = "### Coverage summary\\n\\n" + "\\n".join(md)
-                      # Post comment
-                      url = f'https://api.github.com/repos/{repo}/issues/{pr}/comments'
-                      headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}
-                      resp = requests.post(url, json={'body': body}, headers=headers)
-                      print('Posted comment, status', resp.status_code)
+                    import os, xml.etree.ElementTree as ET, requests
+                    from pathlib import Path
+                    token = os.environ['GITHUB_TOKEN']
+                    repo = os.environ['GITHUB_REPOSITORY']
+                    pr = os.environ['GITHUB_REF'].split('/')[-1]
+                    xml_path = Path('coverage.xml')
+                    if not xml_path.exists():
+                        print('No coverage.xml')
+                        raise SystemExit(0)
+                    tree = ET.parse(xml_path)
+                    root = tree.getroot()
+                    rows = []
+                    for pkg in root.findall('.//package'):
+                        for cls in pkg.findall('.//class'):
+                            filename = cls.get('filename', '')
+                            line_rate = cls.get('line-rate')
+                            pct = float(line_rate) * 100 if line_rate is not None else None
+                            rows.append((filename, pct))
+                    if not rows:
+                        line_rate = root.get('line-rate')
+                        pct = float(line_rate) * 100 if line_rate is not None else None
+                        rows = [('total', pct)]
+                    # Build markdown table (first 20 rows)
+                    md = []
+                    md.append('| File | Coverage |')
+                    md.append('|:---|---:|')
+                    for name, pct in sorted(rows, key=lambda x: (x[1] is None, -(x[1] or 0)))[:20]:
+                        pct_text = f"{pct:.1f}%" if pct is not None else 'N/A'
+                        md.append(f'| `{name}` | {pct_text} |')
+                    body = "### Coverage summary\\n\\n" + "\\n".join(md)
+                    # Post comment
+                    url = f'https://api.github.com/repos/{repo}/issues/{pr}/comments'
+                    headers = {'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'}
+                    resp = requests.post(url, json={'body': body}, headers=headers)
+                    print('Posted comment, status', resp.status_code)
                   PY
