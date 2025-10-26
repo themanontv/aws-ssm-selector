@@ -29,4 +29,4 @@ jobs:
 
             - name: Run tests with coverage and produce XML
               run: |
-                  pytest --cov=src --cov-report=xml:coverage.xml --maxfail=1 -q
+                  pytest --cov=src --cov-report=xml:coverage.xml --maxfail=1 -q --cov-fail-under=80

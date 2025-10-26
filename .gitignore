@@ -1,7 +1,8 @@
 .DS_Store
 .nova
 __pycache__
+
+coverage.xml
 .coverage
-htmlcov/
 .pytest_cache/
 .cache/
