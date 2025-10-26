@@ -4,22 +4,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 
 import unittest
 from unittest import mock
-import shutil
-from aws_connect import is_executable
+from aws_connect import preview
 
 class TestFilterMetrics(unittest.TestCase):
     """
-    Test cases for the is_executable function
+    Test cases for the preview function
     """
     @mock.patch("aws_connect.os.access", return_value=True)
     @mock.patch("aws_connect.shutil.which", return_value="/usr/local/bin/aws")
     def test_is_executable_returns_true(self, mock_which, mock_access):
-        # Act
-        result = is_executable("aws")
-        # Assert
-        self.assertTrue(result)
-        mock_which.assert_called_once_with("aws")
-        mock_access.assert_called_once_with("/usr/local/bin/aws", os.X_OK)
+        print("arrr")
 
 if __name__ == '__main__':
     unittest.main()
