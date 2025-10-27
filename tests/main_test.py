@@ -33,5 +33,14 @@ class TestMain(unittest.TestCase):
             with mock.patch('aws_connect.subprocess.run', return_value=fake):
                 result = main(False)
 
+    @unittest.expectedFailure
+    @mock.patch('aws_connect.os.getenv', return_value=None)
+    @mock.patch('aws_connect.is_executable', return_value=True)
+    def test_get_profile_error(self, mock_is_executable, mock_getenv):
+        fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
+        with mock.patch('aws_connect.open', mock.mock_open(read_data="[test]")) as mock_file:
+            with mock.patch('aws_connect.subprocess.run', return_value=fake):
+                result = main(False)
+                
 if __name__ == '__main__':
     unittest.main()
