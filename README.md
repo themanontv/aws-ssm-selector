@@ -18,7 +18,7 @@ pip3 install -r src/requirements.txt
 ```
 
 ## Installation
-If you have a shell environment you can use the `install.sh` script below to put the latest local version of the script in your environment.
+If you have a shell environment you can use the `install.sh` script below to put the latest local version of the script in your commands.
 
 ```
 sudo chmod +x install.sh
