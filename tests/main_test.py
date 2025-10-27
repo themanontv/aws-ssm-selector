@@ -4,8 +4,6 @@ import json
 import subprocess
 import unittest
 from unittest import mock
-from click.testing import CliRunner
-import click
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from aws_connect import main
@@ -25,7 +23,7 @@ class TestMain(unittest.TestCase):
     def test_os_profile(self, mock_is_executable, mock_getenv):
         fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
         with mock.patch('aws_connect.subprocess.run', return_value=fake):
-            main(False)
+            result = main(False)
 
     @mock.patch('aws_connect.os.getenv', return_value=None)
     @mock.patch('aws_connect.is_executable', return_value=True)
@@ -33,7 +31,16 @@ class TestMain(unittest.TestCase):
         fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
         with mock.patch('aws_connect.open', mock.mock_open(read_data="[profile test]")) as mock_file:
             with mock.patch('aws_connect.subprocess.run', return_value=fake):
-                main(False)
+                result = main(False)
+
+    @unittest.expectedFailure
+    @mock.patch('aws_connect.os.getenv', return_value=None)
+    @mock.patch('aws_connect.is_executable', return_value=True)
+    def test_get_profile_error(self, mock_is_executable, mock_getenv):
+        fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
+        with mock.patch('aws_connect.open', mock.mock_open(read_data="[test]")) as mock_file:
+            with mock.patch('aws_connect.subprocess.run', return_value=fake):
+                result = main(False)
                 
 if __name__ == '__main__':
     unittest.main()
