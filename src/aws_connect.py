@@ -76,21 +76,24 @@ def preview(selection):
 
 
 def main():
+    """
+    Main Function
+    """
     file_path = '/Users/<user>/.aws/config'
 
     # Special environments list
     hidden_environments = ['']
     scary_environments = ['production']
-    
+
     if not os.getenv('AWS_PROFILE') and is_executable("aws"):
         # Reading from the ~/.aws/config file to get the profiles
         try:
             with open(file_path, encoding='utf-8') as file:
                 text = file.read()
             # Set regex to look for things with profile in it
-    
+
             profiles = []
-    
+
             # Split based on new lines and get the first group of the match
             for line in text.splitlines():
                 match = re.search(profile_regex, line)
@@ -115,7 +118,7 @@ def main():
             sys.exit()
     else:
         profile = os.getenv('AWS_PROFILE')
-    
+
     # Set the colour of the highlight and present option to enter
     if profile in scary_environments:
         try:
@@ -126,13 +129,13 @@ def main():
             sys.exit()
     else:
         highlight = "bg_green"
-    
+
     # Execute the describe instances command
     if is_executable("aws-vault"):
         result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True)
     else:
         result = subprocess.run(['aws', 'ec2', 'describe-instances', '--profile', profile], stdout=subprocess.PIPE, check=True)
-    
+
     # Parse the JSON
     try:
         parsed = json.loads(result.stdout)
@@ -140,11 +143,12 @@ def main():
         print("I don't think you're allowed to do that ")
         sys.exit()
 
+    # Have to define this as global to bypass simple_term_menu jank
     global instance_data
     instance_data = parsed['Reservations']
-    
+
     items = []
-    
+
     # Get the names and instance IDs from the JSON
     for reservation in instance_data:
         for instance in reservation['Instances']:
@@ -162,7 +166,7 @@ def main():
                 name = "NONAME"
             id = instance["InstanceId"]
             items.append(f'{name:<30s} ({id:<15s})')
-    
+
     # Show the terminal menu for the instance list
     terminal_menu = TerminalMenu(
         menu_entries=items,
@@ -173,7 +177,7 @@ def main():
         menu_highlight_style=(highlight, "fg_black", "bold")
     )
     index_2 = terminal_menu.show()
-    
+
     try:
         match = re.search(instance_regex, items[index_2])
     except TypeError:
@@ -181,7 +185,7 @@ def main():
         print("No Instance selected ")
         sys.exit()
     id = match.group(1)
-    
+
     # Execute the describe instances command
     if is_executable("aws-vault"):
         os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
@@ -190,4 +194,4 @@ def main():
 
 
 if __name__ == '__main__':
-        main()
+    main()

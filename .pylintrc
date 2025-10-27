@@ -2,4 +2,4 @@
 max-line-length=240
 [MESSAGES CONTROL]
 #TODO: remove some of these disables
-disable = redefined-outer-name, invalid-name, redefined-builtin, inconsistent-return-statements, bare-except, too-many-locals, too-many-branches, too-many-statements
+disable = redefined-outer-name, invalid-name, redefined-builtin, inconsistent-return-statements, bare-except, too-many-locals, too-many-branches, too-many-statements, global-variable-undefined
