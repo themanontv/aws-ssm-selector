@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import subprocess
+import argparse
 import unittest
 from unittest import mock
 
@@ -20,14 +21,37 @@ class TestMain(unittest.TestCase):
 
     @mock.patch('aws_connect.os.getenv', return_value='test')
     @mock.patch('aws_connect.is_executable', return_value=True)
-    def test_os_profile(self, mock_is_executable, mock_getenv):
+    @mock.patch('aws_connect.argparse.ArgumentParser.parse_args',
+    return_value=argparse.Namespace(region=None))
+    def test_os_profile(self, mock_args, mock_is_executable, mock_getenv):
+        fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
+        with mock.patch('aws_connect.subprocess.run', return_value=fake):
+            result = main(False)
+    
+    @mock.patch('aws_connect.os.getenv', return_value='test')
+    @mock.patch('aws_connect.is_executable', return_value=True)
+    @mock.patch('aws_connect.argparse.ArgumentParser.parse_args',
+    return_value=argparse.Namespace(region="eu-west-1"))
+    def test_os_profile_args(self, mock_args, mock_is_executable, mock_getenv):
         fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
         with mock.patch('aws_connect.subprocess.run', return_value=fake):
             result = main(False)
 
     @mock.patch('aws_connect.os.getenv', return_value=None)
     @mock.patch('aws_connect.is_executable', return_value=True)
-    def test_get_profile(self, mock_is_executable, mock_getenv):
+    @mock.patch('aws_connect.argparse.ArgumentParser.parse_args',
+    return_value=argparse.Namespace(region="eu-west-2"))
+    def test_get_profile(self, mock_args, mock_is_executable, mock_getenv):
+        fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
+        with mock.patch('aws_connect.open', mock.mock_open(read_data="[profile test]")) as mock_file:
+            with mock.patch('aws_connect.subprocess.run', return_value=fake):
+                result = main(False)
+    
+    @mock.patch('aws_connect.os.getenv', return_value=None)
+    @mock.patch('aws_connect.is_executable', return_value=True)
+    @mock.patch('aws_connect.argparse.ArgumentParser.parse_args',
+    return_value=argparse.Namespace(region="us-east-1"))
+    def test_get_profile_args(self, mock_args, mock_is_executable, mock_getenv):
         fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
         with mock.patch('aws_connect.open', mock.mock_open(read_data="[profile test]")) as mock_file:
             with mock.patch('aws_connect.subprocess.run', return_value=fake):
@@ -36,7 +60,9 @@ class TestMain(unittest.TestCase):
     @unittest.expectedFailure
     @mock.patch('aws_connect.os.getenv', return_value=None)
     @mock.patch('aws_connect.is_executable', return_value=True)
-    def test_get_profile_error(self, mock_is_executable, mock_getenv):
+    @mock.patch('aws_connect.argparse.ArgumentParser.parse_args',
+    return_value=argparse.Namespace(region="eu-west-2"))
+    def test_get_profile_error(self, mock_args, mock_is_executable, mock_getenv):
         fake = subprocess.CompletedProcess(args=['cmd'], returncode=0, stdout=self.instance_data)
         with mock.patch('aws_connect.open', mock.mock_open(read_data="[test]")) as mock_file:
             with mock.patch('aws_connect.subprocess.run', return_value=fake):
