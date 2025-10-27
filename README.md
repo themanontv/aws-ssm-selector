@@ -22,7 +22,7 @@ If you have a shell environment you can use the `install.sh` script below to put
 
 ```
 sudo chmod +x install.sh
-sudo ./install.sh
+./install.sh
 ```
 
 ## Special Environments
