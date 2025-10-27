@@ -75,7 +75,7 @@ def preview(selection):
                 return '\n'.join(preview)
 
 
-def main():
+def main(interactive):
     """
     Main Function
     """
@@ -90,7 +90,6 @@ def main():
         try:
             with open(file_path, encoding='utf-8') as file:
                 text = file.read()
-            # Set regex to look for things with profile in it
 
             profiles = []
 
@@ -101,17 +100,20 @@ def main():
                     if match.group(1) not in hidden_environments:
                         profiles.append(match.group(1))
         except:
-            print("No profiles found ")
+            print("No profiles found")
             sys.exit()
         # Show the terminal menu for the profile list
-        terminal_menu = TerminalMenu(
-            menu_entries=profiles,
-            title="Select the desired profile ",
-            show_search_hint=True,
-            menu_highlight_style=("bg_green", "fg_black", "bold")
-        )
+        profile_index = 0
+        if interactive:
+            terminal_menu = TerminalMenu(
+                menu_entries=profiles,
+                title="Select the desired profile ",
+                show_search_hint=True,
+                menu_highlight_style=("bg_green", "fg_black", "bold")
+            )
+            profile_index = terminal_menu.show()
         try:
-            profile = profiles[terminal_menu.show()]
+            profile = profiles[profile_index]
         except TypeError:
             # If type is incorrect likely caused by exiting the menu
             print("Ok, Bye. ")
@@ -168,21 +170,24 @@ def main():
             items.append(f'{name:<30s} ({id:<15s})')
 
     # Show the terminal menu for the instance list
-    terminal_menu = TerminalMenu(
-        menu_entries=items,
-        title="Select an instance in " + profile + " ",
-        show_search_hint=True,
-        preview_command=preview,
-        preview_title="Details",
-        menu_highlight_style=(highlight, "fg_black", "bold")
-    )
-    index_2 = terminal_menu.show()
+    instance_index = 0
+    if interactive:
+        terminal_menu = TerminalMenu(
+            menu_entries=items,
+            title="Select an instance in " + profile + " ",
+            show_search_hint=True,
+            preview_command=preview,
+            preview_title="Details",
+            menu_highlight_style=(highlight, "fg_black", "bold")
+        )
+        instance_index = terminal_menu.show()
 
     try:
-        match = re.search(instance_regex, items[index_2])
+        match = re.search(instance_regex, items[instance_index])
     except TypeError:
         # If type is incorrect likely caused by exiting the menu
-        print("No Instance selected ")
+        print("No Instance selected")
+        print(items[0])
         sys.exit()
     id = match.group(1)
 
@@ -194,4 +199,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(True)

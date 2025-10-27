@@ -1,10 +1,10 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
 import unittest
 from unittest import mock
 import shutil
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 from aws_connect import is_executable
 
 class TestExecutable(unittest.TestCase):
