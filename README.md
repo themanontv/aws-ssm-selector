@@ -12,7 +12,7 @@ I do this by using the AWS plugin for Oh my zsh and this can let you set the pro
 # Requirements
 To connect to instances they will need to have the SSM agent installed and you will need to have the AWS SSM client installed
 on your machine, this can be found [here](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
-You will also need to make sure that both the `click` and `simple_term_menu` python libraries are installed which you can do by using the requirements file:
+You will also need to make sure that `click`, `simple_term_menu` and `argparse` python libraries are installed which you can do by using the requirements file:
 ```
 pip3 install -r src/requirements.txt
 ```

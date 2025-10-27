@@ -216,7 +216,6 @@ def main(interactive):
         match = re.search(instance_regex, items[instance_index])
     except TypeError:
         print("No Instance selected")
-        print(items[0])
         sys.exit()
     id = match.group(1)
 
