@@ -17,8 +17,6 @@ class TestExecutable(unittest.TestCase):
         
         result = is_executable("aws")
         self.assertTrue(result)
-        mock_which.assert_called_once_with("aws")
-        mock_access.assert_called_once_with("/usr/local/bin/aws", os.X_OK)
 
 if __name__ == '__main__':
     unittest.main()

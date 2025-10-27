@@ -77,7 +77,7 @@ def preview(selection):
 
 def main():
     file_path = '/Users/<user>/.aws/config'
-    
+
     # Special environments list
     hidden_environments = ['']
     scary_environments = ['production']
