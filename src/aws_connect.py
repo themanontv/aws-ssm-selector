@@ -19,6 +19,7 @@ import re
 import json
 import shutil
 import subprocess
+import argparse
 import click
 from simple_term_menu import TerminalMenu
 
@@ -74,11 +75,38 @@ def preview(selection):
                     preview.append("IP: NONE")
                 return '\n'.join(preview)
 
+def parse_args(args):
+    """
+    Handles the command line arguments
+
+    Args:
+        args: sysargv input
+
+    Returns:
+        A set of argument objects
+    """
+    parser = argparse.ArgumentParser(
+        prog='AWS SSM Selector',
+        description='This is an interactive program for selecting EC2 instances to connect to via SSM'
+    )
+
+    parser.add_argument(
+        '-r',
+        '--region',
+        dest='region',
+        action='store',
+        required=False,
+        help='Allows the user to override the default region in their AWS config'
+    )
+
+    return parser.parse_args(args)
 
 def main(interactive):
     """
     Main Function
     """
+    args = parse_args(sys.argv[1:])
+
     file_path = '/Users/<user>/.aws/config'
 
     # Special environments list
@@ -132,20 +160,23 @@ def main(interactive):
     else:
         highlight = "bg_green"
 
-    # Execute the describe instances command
-    if is_executable("aws-vault"):
-        result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True)
+    if args.region:
+        if is_executable("aws-vault"):
+            result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances', '--region', args.region], stdout=subprocess.PIPE, check=True)
+        else:
+            result = subprocess.run(['aws', 'ec2', 'describe-instances', '--profile', profile, '--region', args.region], stdout=subprocess.PIPE, check=True)
     else:
-        result = subprocess.run(['aws', 'ec2', 'describe-instances', '--profile', profile], stdout=subprocess.PIPE, check=True)
+        if is_executable("aws-vault"):
+            result = subprocess.run(['aws-vault', 'exec', profile, '--', 'aws', 'ec2', 'describe-instances'], stdout=subprocess.PIPE, check=True)
+        else:
+            result = subprocess.run(['aws', 'ec2', 'describe-instances', '--profile', profile], stdout=subprocess.PIPE, check=True)
 
-    # Parse the JSON
     try:
         parsed = json.loads(result.stdout)
     except json.decoder.JSONDecodeError:
         print("I don't think you're allowed to do that ")
         sys.exit()
 
-    # Have to define this as global to bypass simple_term_menu jank
     global instance_data
     instance_data = parsed['Reservations']
 
@@ -155,7 +186,6 @@ def main(interactive):
     for reservation in instance_data:
         for instance in reservation['Instances']:
             name = ""
-            # Get the Name tag value and make it the name
             try:
                 for tag in instance["Tags"]:
                     if tag["Key"] == "Name":
@@ -185,17 +215,21 @@ def main(interactive):
     try:
         match = re.search(instance_regex, items[instance_index])
     except TypeError:
-        # If type is incorrect likely caused by exiting the menu
         print("No Instance selected")
         print(items[0])
         sys.exit()
     id = match.group(1)
 
-    # Execute the describe instances command
-    if is_executable("aws-vault"):
-        os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
+    if args.region:
+        if is_executable("aws-vault"):
+            os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id + ' --region ' + args.region)
+        else:
+            os.system('aws ssm start-session --target ' + id + ' --profile ' + profile + ' --region ' + args.region)
     else:
-        os.system('aws ssm start-session --target ' + id + ' --profile ' + profile)
+        if is_executable("aws-vault"):
+            os.system('aws-vault exec ' + profile + ' -- aws ssm start-session --target ' + id)
+        else:
+            os.system('aws ssm start-session --target ' + id + ' --profile ' + profile)
 
 
 if __name__ == '__main__':
